@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { ColorThemeToggle } from "@/components/ColorThemeToggle";
 import { cn } from "@/lib/utils";
-import { useMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -20,7 +20,7 @@ const navigation = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
   const { pathname } = useLocation();
   
   // Close mobile menu when path changes
