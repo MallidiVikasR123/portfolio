@@ -1,125 +1,113 @@
 
 import { useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom";
-import { ThemeToggle } from "./ThemeToggle";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { ColorThemeToggle } from "@/components/ColorThemeToggle";
 import { cn } from "@/lib/utils";
+import { useMobile } from "@/hooks/use-mobile";
 
-const NAV_ITEMS = [
-  { name: "Home", path: "/" },
-  { name: "About", path: "/about" },
-  { name: "Skills", path: "/skills" },
-  { name: "Experience", path: "/experience" },
-  { name: "Education", path: "/education" },
-  { name: "Projects", path: "/projects" },
-  { name: "Contact", path: "/contact" },
+const navigation = [
+  { name: "Home", href: "/" },
+  { name: "About", href: "/about" },
+  { name: "Skills", href: "/skills" },
+  { name: "Experience", href: "/experience" },
+  { name: "Education", href: "/education" },
+  { name: "Projects", href: "/projects" },
+  { name: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const location = useLocation();
-
+  const [open, setOpen] = useState(false);
+  const isMobile = useMobile();
+  const { pathname } = useLocation();
+  
+  // Close mobile menu when path changes
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
+    setOpen(false);
+  }, [pathname]);
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Close mobile menu when route changes
+  // Close mobile menu when window resizes to desktop
   useEffect(() => {
-    setIsOpen(false);
-  }, [location.pathname]);
+    if (!isMobile && open) {
+      setOpen(false);
+    }
+  }, [isMobile, open]);
 
   return (
-    <header
+    <nav
       className={cn(
-        "fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ease-in-out",
-        scrolled
-          ? "py-3 glassmorphism"
-          : "py-5 bg-transparent"
+        "fixed top-0 left-0 w-full z-50 transition-all duration-300 backdrop-blur-md bg-background/70 border-b border-border",
       )}
     >
-      <nav className="container mx-auto px-4 md:px-6 flex items-center justify-between">
-        <NavLink
-          to="/"
-          className="text-2xl font-display font-bold relative z-20 text-foreground"
-        >
-          <span className="text-gradient">VR</span>
-        </NavLink>
-
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-1">
-          {NAV_ITEMS.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.path}
-              className={({ isActive }) =>
-                cn(
-                  "px-4 py-2 text-sm font-medium rounded-full transition-all duration-300",
-                  isActive 
-                    ? "bg-secondary text-foreground" 
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                )
-              }
-            >
-              {item.name}
-            </NavLink>
-          ))}
-          <ThemeToggle className="ml-2" />
-        </div>
-
-        {/* Mobile Navigation Button */}
-        <div className="flex md:hidden items-center gap-2">
-          <ThemeToggle />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsOpen(!isOpen)}
-            className="relative z-20"
-          >
-            {isOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
-            )}
-            <span className="sr-only">Toggle menu</span>
-          </Button>
-        </div>
-
-        {/* Mobile Navigation Menu */}
-        <div
-          className={cn(
-            "fixed inset-0 bg-background/95 glassmorphism flex flex-col items-center justify-center transition-all duration-300 ease-in-out md:hidden",
-            isOpen
-              ? "opacity-100 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
-          )}
-        >
-          <div className="flex flex-col items-center gap-5 text-center">
-            {NAV_ITEMS.map((item) => (
-              <NavLink
-                key={item.name}
-                to={item.path}
-                className={({ isActive }) =>
-                  cn(
-                    "text-lg font-medium transition-all duration-300 px-6 py-2 rounded-full",
-                    isActive
-                      ? "bg-secondary text-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                  )
-                }
-              >
-                {item.name}
-              </NavLink>
-            ))}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 justify-between">
+          <div className="flex flex-shrink-0 items-center">
+            <Link to="/" className="text-lg font-bold font-display">
+              Mallidi Vikas Reddy
+            </Link>
+          </div>
+          
+          {/* Desktop navigation */}
+          <div className="hidden md:flex md:items-center md:space-x-2">
+            <div className="hidden md:flex md:items-center md:space-x-4">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={cn(
+                    "px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                    pathname === item.href
+                      ? "text-foreground bg-secondary"
+                      : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                  )}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+            <div className="flex items-center space-x-1 border-l ml-2 pl-2 border-border">
+              <ColorThemeToggle />
+              <ThemeToggle />
+            </div>
+          </div>
+          
+          {/* Mobile menu button */}
+          <div className="flex items-center md:hidden space-x-2">
+            <ColorThemeToggle />
+            <ThemeToggle />
+            <Button variant="ghost" size="icon" onClick={() => setOpen(!open)}>
+              {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
           </div>
         </div>
-      </nav>
-    </header>
+      </div>
+
+      {/* Mobile menu */}
+      <div
+        className={cn(
+          "md:hidden transition-all duration-300 ease-in-out overflow-hidden",
+          open ? "max-h-[500px] border-b border-border" : "max-h-0"
+        )}
+      >
+        <div className="px-2 pb-3 pt-2 space-y-1">
+          {navigation.map((item) => (
+            <Link
+              key={item.name}
+              to={item.href}
+              className={cn(
+                "block px-3 py-2 rounded-md text-base font-medium",
+                pathname === item.href
+                  ? "bg-secondary text-foreground"
+                  : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+              )}
+            >
+              {item.name}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </nav>
   );
 }
