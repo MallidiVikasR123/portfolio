@@ -44,8 +44,8 @@ export default function Navbar() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between">
           <div className="flex flex-shrink-0 items-center">
-            <Link to="/" className="text-lg font-bold font-display">
-              Mallidi Vikas Reddy
+            <Link to="/" className="text-lg font-bold font-display block w-0 invisible text-gradient animate-text-reveal">
+              MVR
             </Link>
           </div>
           
